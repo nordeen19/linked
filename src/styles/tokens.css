@@ -1,0 +1,41 @@
+:root {
+  /* Colors - Codex */
+  --color-progressive: #3366CC;
+  --color-progressive--hover: #2A4B8D;
+  --color-destructive: #D73333;
+  --color-success: #00af89;
+  --color-base: #202122;
+  --color-subtle: #54595D;
+  --color-placeholder: #72777D;
+  --color-surface-0: #FFFFFF;
+  --color-surface-1: #F8F9FA;
+  --color-surface-2: #EAECF0;
+  --color-inverted: #FFFFFF;
+  --color-base--disabled: #A2A9B1;
+
+  /* Typography */
+  font-family: -apple-system, 'Roboto', 'Noto Sans', sans-serif;
+  --font-size-small: 13px;
+  --font-size-medium: 16px;
+  --font-size-large: 20px;
+  --font-size-xlarge: 24px;
+  --font-weight-normal: 400;
+  --font-weight-bold: 700;
+  --line-height-tight: 1.25;
+  --line-height-medium: 1.5;
+
+  /* Spacing - 8px base grid */
+  --spacing-25: 4px;
+  --spacing-50: 8px;
+  --spacing-75: 12px;
+  --spacing-100: 16px;
+  --spacing-150: 24px;
+  --spacing-200: 32px;
+  --spacing-300: 48px;
+
+  /* Elevation */
+  --box-shadow-card: 0 1px 4px rgba(0,0,0,0.12), 0 0 1px rgba(0,0,0,0.08);
+  --box-shadow-elevated: 0 4px 12px rgba(0,0,0,0.15);
+  --border-radius-base: 8px;
+  --border-radius-pill: 9999px;
+}
