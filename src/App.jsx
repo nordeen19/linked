@@ -4,7 +4,7 @@ import AppBar from './components/AppBar';
 import BottomNav from './components/BottomNav';
 import DailyGameScreen from './components/DailyGameScreen';
 import TravelerGameScreen from './components/TravelerGameScreen';
-import ArticlePicker from './components/ArticlePicker';
+import TopicPicker from './components/TopicPicker';
 import CompletionScreen from './components/CompletionScreen';
 import ResultsScreen from './components/ResultsScreen';
 import { useGameState } from './hooks/useGameState';
@@ -162,7 +162,6 @@ export default function App() {
   const { state, setMode, setPhase, loadDaily, loadTraveler, recordDecision, travelerAdvance, nextCard, setError } = useGameState();
   const { streak, incrementStreak } = useStreak();
   const haptics = useHaptics();
-  const [travelerSuggestions, setTravelerSuggestions] = useState([]);
 
   // Load daily challenge on mount / tab switch
   useEffect(() => {
@@ -183,21 +182,6 @@ export default function App() {
     }
   }
 
-  // Set up traveler suggestions from featured article links
-  useEffect(() => {
-    if (tab !== 'traveler') return;
-    (async () => {
-      try {
-        const featured = await getFeaturedArticle();
-        const links = await getArticleLinks(featured.title);
-        const sample = shuffle(links).slice(0, 5);
-        const withSummaries = await Promise.all(
-          sample.map(l => getArticleSummary(l.title).catch(() => ({ title: l.title, description: '', thumbnail: null })))
-        );
-        setTravelerSuggestions(withSummaries);
-      } catch {}
-    })();
-  }, [tab]);
 
   function handleTabChange(newTab) {
     setTab(newTab);
@@ -365,16 +349,14 @@ export default function App() {
         />
       ) : (
         // Traveler tab
-        mode === 'traveler' && phase === 'loading' && !state.cards.length ? (
-          <ArticlePicker onSelect={handleTravelerSelect} suggestions={travelerSuggestions} />
-        ) : mode === 'traveler' && (phase === 'playing' || phase === 'feedback' || phase === 'error') ? (
+        mode === 'traveler' && (phase === 'playing' || phase === 'feedback' || phase === 'error') ? (
           <TravelerGameScreen
             state={{ ...state, mode: 'traveler' }}
             onSwipe={handleTravelerSwipe}
             onNextCard={handleTravelerNextCard}
           />
         ) : (
-          <ArticlePicker onSelect={handleTravelerSelect} suggestions={travelerSuggestions} />
+          <TopicPicker onSelect={handleTravelerSelect} />
         )
       )}
 
