@@ -41,7 +41,18 @@ export async function getFeaturedArticle(date = new Date()) {
       return result;
     } catch {}
   }
-  throw new Error('Could not load a featured article. Check your connection.');
+  // Final fallback: use a known good article so the game still works
+  const FALLBACK_TITLES = [
+    'Albert Einstein', 'World War II', 'Solar System',
+    'Ancient Rome', 'Charles Darwin',
+  ];
+  const fallbackTitle = FALLBACK_TITLES[Math.floor(Math.random() * FALLBACK_TITLES.length)];
+  try {
+    const summary = await getArticleSummary(fallbackTitle);
+    return summary;
+  } catch {
+    throw new Error('Could not connect to Wikipedia. Check your internet connection.');
+  }
 }
 
 export async function getArticleSummary(title) {
