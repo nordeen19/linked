@@ -13,24 +13,35 @@ async function fetchCached(url) {
 }
 
 export async function getFeaturedArticle(date = new Date()) {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  const key = `tfa-${y}-${m}-${d}`;
-  const cached = sessionStorage.getItem(key);
-  if (cached) return JSON.parse(cached);
+  // Try today, then up to 3 previous days (API can 404 early UTC or on some dates)
+  for (let offset = 0; offset <= 3; offset++) {
+    const d = new Date(date);
+    d.setDate(d.getDate() - offset);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    const key = `tfa-${y}-${m}-${day}`;
+    const cached = sessionStorage.getItem(key);
+    if (cached) return JSON.parse(cached);
 
-  const data = await fetchCached(`${REST}/page/featured/${y}/${m}/${d}`);
-  const tfa = data.tfa;
-  if (!tfa) throw new Error('No featured article');
-  const result = {
-    title: tfa.title,
-    description: tfa.description || tfa.extract?.split('.')[0] || '',
-    extract: tfa.extract || '',
-    thumbnail: tfa.thumbnail?.source || null,
-  };
-  sessionStorage.setItem(key, JSON.stringify(result));
-  return result;
+    try {
+      const res = await fetch(`${REST}/page/featured/${y}/${m}/${day}`);
+      if (!res.ok) continue;
+      const data = await res.json();
+      const tfa = data.tfa;
+      if (!tfa) continue;
+
+      const result = {
+        title: tfa.title,
+        description: tfa.description || tfa.extract?.split('.')[0] || '',
+        extract: tfa.extract || '',
+        thumbnail: tfa.thumbnail?.source || null,
+      };
+      sessionStorage.setItem(key, JSON.stringify(result));
+      return result;
+    } catch {}
+  }
+  throw new Error('Could not load a featured article. Check your connection.');
 }
 
 export async function getArticleSummary(title) {
